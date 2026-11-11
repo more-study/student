@@ -112,10 +112,10 @@ dialog code{background:var(--soft);padding:1px 5px;border-radius:4px;font-size:1
 <header><div class="in">
   <h1>QUẢN LÝ HỌC SINH<small>Hồ sơ · Lịch sử học tập · Thời khóa biểu · Hoạt động</small></h1>
   <span id="sync">Chỉ lưu trên máy</span>
-  <button class="hb" id="bReload" title="Tải lại từ Google Sheet">⟳ Đồng bộ</button>
-  <button class="hb" id="bExport">Xuất JSON</button>
-  <button class="hb" id="bImport">Nhập JSON</button>
-  <button class="hb" id="bSettings">⚙ Cài đặt</button>
+  <button hidden class="hb" id="bReload" title="Tải lại từ Google Sheet">⟳ Đồng bộ</button>
+  <button hidden class="hb" id="bExport">Xuất JSON</button>
+  <button hidden class="hb" id="bImport">Nhập JSON</button>
+  <button hidden class="hb" id="bSettings">⚙ Cài đặt</button>
   <input type="file" id="fImport" accept=".json,application/json" hidden>
 </div></header>
 
@@ -156,7 +156,12 @@ function lsGet(k,d){try{var v=localStorage.getItem(k);return v==null?d:JSON.pars
 function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 var db=lsGet(LS_DB,[]);                 // mảng học sinh
 var dirty=lsGet(LS_DIRTY,{});           // id -> ghi chú thay đổi chưa gửi lên Sheet
-var sheetUrl=lsGet(LS_URL,'');
+/* ================= CÀI ĐẶT – sửa trực tiếp tại đây =================
+   SHEET_URL: URL ứng dụng web Apps Script (kết thúc bằng /exec), xem apps-script/Code.gs.
+   Để trống '' thì dùng URL đã lưu trong trình duyệt (nếu có), hoặc chỉ lưu trên máy. */
+var SHEET_URL='';
+/* ==================================================================== */
+var sheetUrl=SHEET_URL||lsGet(LS_URL,'');
 var selId=lsGet(LS_SEL,null), tab='info', tkbSel=null, tkbEdit=false, actFilter='';
 
 

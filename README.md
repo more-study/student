@@ -15,7 +15,7 @@ Trang web một file (`index.html`) để quản lý hồ sơ học sinh, lưu d
 2. Dán nội dung [`apps-script/Code.gs`](apps-script/Code.gs), bấm Lưu.
 3. **Triển khai → Tùy chọn triển khai mới → Ứng dụng web**: *Thực thi với tư cách: Tôi*, *Người có quyền truy cập: Bất kỳ ai*.
 4. Sao chép URL `https://script.google.com/macros/s/.../exec`.
-5. Mở `index.html` → **⚙ Cài đặt** → dán URL → **Lưu**. Nếu đã có dữ liệu trên máy, bấm **Gửi toàn bộ dữ liệu lên Sheet**.
+5. Trên GitHub mở `index.html` → bấm ✏️ → tìm dòng `var SHEET_URL='';` → dán URL vào giữa hai dấu nháy → Commit changes.
 
 Sheet `HocSinh` chứa mỗi học sinh một dòng (các cột đầu để xem nhanh, dữ liệu đầy đủ ở dạng JSON trong cột `data_*`).
 Sheet `NhatKy` ghi lại lịch sử thao tác.
