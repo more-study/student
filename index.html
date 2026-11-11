@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quản lý học sinh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1e3a5f;--navy2:#274b7a;--amber:#f59e0b;--ink:#1f2937;--mute:#64748b;--line:#d9e0ea;--bg:#f2f5f9;--card:#fff;--soft:#eef2f7;--hi:#fff7e6;--red:#b91c1c;--green:#15803d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Be Vietnam Pro',system-ui,sans-serif;line-height:1.5}
+button,input,select,textarea{font:inherit;color:inherit}
+header{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;box-shadow:0 2px 8px #0003}
+header .in{max-width:1280px;margin:0 auto;padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+header h1{margin:0;font-size:18px;font-weight:800;margin-right:auto}
+header h1 small{display:block;font-size:12px;font-weight:500;color:#cbd5e1}
+.hb{border:0;border-radius:7px;padding:6px 12px;font-weight:600;font-size:13px;cursor:pointer;background:#fff;color:var(--navy)}
+.hb:hover{background:#e2e8f0}
+#sync{font-size:12.5px;color:#fde68a}
+#sync.err{color:#fca5a5}
+.wrap{max-width:1280px;margin:0 auto;padding:16px;display:grid;grid-template-columns:290px 1fr;gap:16px;align-items:start}
+@media(max-width:820px){.wrap{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+aside .card{position:sticky;top:72px}
+aside h2{margin:0 0 10px;font-size:16px;color:var(--navy)}
+.inp,input.inp,select.inp,textarea.inp{width:100%;padding:8px 11px;border:1px solid var(--line);border-radius:8px;background:#fff}
+textarea.inp{min-height:70px;resize:vertical}
+.btn{border:0;border-radius:8px;padding:8px 14px;font-weight:700;cursor:pointer;background:var(--navy);color:#fff}
+.btn:hover{background:var(--navy2)}
+.btn.ghost{background:var(--soft);color:var(--navy)}
+.btn.ghost:hover{background:#e2e8f0}
+.btn.del{background:#fee2e2;color:var(--red)}
+.btn.sm{padding:5px 10px;font-size:13px}
+#list{list-style:none;margin:10px 0 0;padding:0;max-height:calc(100vh - 260px);overflow:auto}
+#list li{padding:8px 10px;border-radius:9px;cursor:pointer;display:flex;flex-direction:column;border:1px solid transparent}
+#list li:hover{background:var(--soft)}
+#list li.on{background:var(--hi);border-color:#fcd34d}
+#list li b{font-size:14px}
+#list li span{font-size:12px;color:var(--mute)}
+.empty{color:var(--mute);font-size:14px;text-align:center;padding:30px 10px}
+.top{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+.top h2{margin:0;font-size:24px;color:var(--navy);margin-right:auto}
+.top .meta{font-size:13px;color:var(--mute);width:100%;margin-top:-6px}
+.tabs{display:flex;flex-wrap:wrap;gap:4px;background:#e2e8f0;border-radius:10px;padding:3px;margin-bottom:14px}
+.tabs button{border:0;background:none;padding:7px 14px;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer;color:#475569}
+.tabs button.on{background:var(--navy);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+label.f{display:block;font-size:13px;font-weight:600;color:var(--navy)}
+label.f .inp{margin-top:4px;font-weight:400;color:var(--ink)}
+.scroll{overflow-x:auto}
+table.t{border-collapse:collapse;width:100%;font-size:14px}
+table.t th{text-align:left;background:var(--soft);padding:7px 8px;border:1px solid var(--line);color:var(--navy);white-space:nowrap}
+table.t td{padding:3px;border:1px solid var(--line);vertical-align:middle}
+table.t td input,table.t td select{width:100%;border:0;padding:6px;background:transparent;min-width:70px}
+table.t td input:focus,table.t td select:focus{outline:2px solid #2563eb;border-radius:4px;background:#fff}
+table.t td.x{width:36px;text-align:center}
+table.t td input[data-l=year]{min-width:105px}table.t td input[data-l=school],table.t td input[data-l=name]{min-width:170px}table.t td input[data-l=date]{min-width:130px}
+table.t td.x button{border:0;background:none;color:var(--red);font-size:18px;cursor:pointer}
+table.tkb{border-collapse:separate;border-spacing:3px;width:100%;min-width:760px;table-layout:fixed}
+table.tkb th{background:var(--navy);color:#fff;border-radius:7px;padding:6px;font-size:13px}
+table.tkb td{background:var(--soft);border-radius:7px;padding:0}
+table.tkb td.p{background:#fef3c7;text-align:center;font-weight:700;font-size:13px;color:#92400e;width:56px}
+table.tkb td.s{background:var(--navy2);color:#fff;text-align:center;font-weight:700;font-size:13px;width:60px}
+table.tkb input{width:100%;border:0;background:transparent;padding:9px 4px;text-align:center;font-size:13.5px}
+table.tkb input:focus{outline:2px solid #2563eb;border-radius:7px;background:#fff}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.row .inp{width:auto;flex:1;min-width:160px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.stat{background:var(--soft);border-radius:10px;padding:10px 12px}
+.stat b{display:block;font-size:22px;color:var(--navy)}
+.stat span{font-size:12.5px;color:var(--mute)}
+.hint{font-size:13px;color:var(--mute);margin:8px 0 0}
+dialog{border:0;border-radius:14px;padding:20px;max-width:560px;width:calc(100% - 32px);box-shadow:0 10px 40px #0004}
+dialog::backdrop{background:#0006}
+dialog h3{margin:0 0 12px;color:var(--navy)}
+dialog code{background:var(--soft);padding:1px 5px;border-radius:4px;font-size:12.5px;word-break:break-all}
+.acts{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
+@media print{header,aside,.tabs,.btn,.x{display:none!important}.wrap{display:block}.card{border:0}}
+</style>
+</head>
+<body>
+<header><div class="in">
+  <h1>QUẢN LÝ HỌC SINH<small>Hồ sơ · Lịch sử học tập · Thời khóa biểu · Hoạt động</small></h1>
+  <span id="sync">Chỉ lưu trên máy</span>
+  <button class="hb" id="bReload" title="Tải lại từ Google Sheet">⟳ Đồng bộ</button>
+  <button class="hb" id="bExport">Xuất JSON</button>
+  <button class="hb" id="bImport">Nhập JSON</button>
+  <button class="hb" id="bSettings">⚙ Cài đặt</button>
+  <input type="file" id="fImport" accept=".json,application/json" hidden>
+</div></header>
+
+<div class="wrap">
+  <aside><div class="card">
+    <h2>Danh sách học sinh (<span id="count">0</span>)</h2>
+    <input class="inp" id="search" type="search" placeholder="Tìm theo tên, lớp, trường...">
+    <div class="row" style="margin:8px 0 0"><button class="btn" id="bAdd" style="width:100%">+ Thêm học sinh</button></div>
+    <ul id="list"></ul>
+  </div></aside>
+  <main id="main" class="card"></main>
+</div>
+
+<dialog id="dlgSettings">
+  <h3>Kết nối Google Sheet</h3>
+  <label class="f">URL ứng dụng web Apps Script
+    <input class="inp" id="sheetUrl" placeholder="https://script.google.com/macros/s/.../exec">
+  </label>
+  <p class="hint">Cách lấy URL: tạo Google Sheet → <b>Tiện ích mở rộng → Apps Script</b> → dán nội dung file <code>apps-script/Code.gs</code> → <b>Triển khai → Ứng dụng web</b> (Thực thi: Tôi; Truy cập: Bất kỳ ai) → sao chép URL kết thúc bằng <code>/exec</code>.</p>
+  <p class="hint">Để trống nếu chỉ muốn lưu trong trình duyệt này.</p>
+  <div class="acts">
+    <button class="btn ghost" id="bPushAll">Gửi toàn bộ dữ liệu lên Sheet</button>
+    <button class="btn ghost" value="cancel" id="bCancel">Hủy</button>
+    <button class="btn" id="bSaveSettings">Lưu</button>
+  </div>
+</dialog>
+
+<script>
+(function(){
+'use strict';
+/* =============== Lưu trữ =============== */
+var LS_DB='qlhs-db', LS_URL='qlhs-sheet-url', LS_DIRTY='qlhs-dirty', LS_SEL='qlhs-sel';
+function lsGet(k,d){try{var v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+var db=lsGet(LS_DB,[]);                 // mảng học sinh
+var dirty=lsGet(LS_DIRTY,{});           // id -> ghi chú thay đổi chưa gửi lên Sheet
+var sheetUrl=lsGet(LS_URL,'');
+var selId=lsGet(LS_SEL,null), tab='info', tkbSel=null, actFilter='';
+
+var DAYS=['Thứ 2','Thứ 3','Thứ 4','Thứ 5','Thứ 6','Thứ 7'];
+var PERIODS=5;
+var RANK=['','Tốt','Khá','Đạt','Chưa đạt','Giỏi','Trung bình','Yếu'];
+var ACT_TYPES=['','Học thuật','Thi học sinh giỏi','Văn nghệ','Thể thao','Tình nguyện','Câu lạc bộ','Đội / Đoàn','Ngoại khóa','Khác'];
+var LEVELS=['','Lớp','Trường','Huyện','Tỉnh','Quốc gia','Quốc tế'];
+
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function $(id){return document.getElementById(id)}
+function cur(){return db.filter(function(s){return s.id===selId})[0]}
+function blankGrid(){var g={};['sang','chieu'].forEach(function(b){g[b]=[];for(var p=0;p<PERIODS;p++)g[b].push(DAYS.map(function(){return''}))});return g}
+function newStudent(name){
+  return{id:uid(),name:name||'Học sinh mới',dob:'',gender:'',ethnic:'',idNo:'',address:'',parent:'',phone:'',email:'',note:'',
+    history:[],timetables:[],activities:[],created:Date.now(),updated:Date.now()};
+}
+function latest(s){return(s.history||[]).slice().sort(function(a,b){return String(b.year||'').localeCompare(String(a.year||''))})[0]||{}}
+function schoolYearNow(){var d=new Date(),y=d.getFullYear();return d.getMonth()>=7?y+'-'+(y+1):(y-1)+'-'+y}
+
+/* =============== Đồng bộ Google Sheet =============== */
+var timers={};
+function status(t,err){var e=$('sync');e.textContent=t;e.classList.toggle('err',!!err)}
+function persist(){lsSet(LS_DB,db);lsSet(LS_DIRTY,dirty)}
+function post(body){
+  return fetch(sheetUrl,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body)})
+    .then(function(r){return r.json()}).then(function(j){if(!j||!j.ok)throw new Error(j&&j.error||'Lỗi');return j});
+}
+function touch(s,note){
+  s.updated=Date.now();dirty[s.id]=note||'Cập nhật';persist();
+  if(!sheetUrl){status('Đã lưu trên máy');return}
+  status('Đang chờ lưu...');
+  clearTimeout(timers[s.id]);timers[s.id]=setTimeout(function(){pushOne(s.id)},1200);
+}
+function pushOne(id){
+  var s=db.filter(function(x){return x.id===id})[0];if(!s||!sheetUrl)return Promise.resolve();
+  var note=dirty[id];status('Đang lưu lên Google Sheet...');
+  return post({action:'save',student:s,note:note}).then(function(){
+    if(dirty[id]===note)delete dirty[id];persist();status('Đã lưu lên Google Sheet');
+  }).catch(function(e){status('Chưa lưu được lên Sheet – sẽ thử lại',true)});
+}
+function pushDirty(){Object.keys(dirty).forEach(function(id){if(id.indexOf('del:')===0)pushDelete(id.slice(4),dirty[id]);else pushOne(id)})}
+function pushDelete(id,name){
+  return post({action:'delete',id:id,name:name}).then(function(){delete dirty['del:'+id];persist()}).catch(function(){});
+}
+function pull(){
+  if(!sheetUrl){status('Chỉ lưu trên máy');return}
+  status('Đang tải từ Google Sheet...');
+  fetch(sheetUrl+(sheetUrl.indexOf('?')<0?'?':'&')+'t='+Date.now()).then(function(r){return r.json()}).then(function(j){
+    if(!j||!j.ok)throw new Error();
+    var remote=j.students||[],map={};
+    remote.forEach(function(s){map[s.id]=s});
+    // giữ bản trên máy nếu còn thay đổi chưa gửi
+    db.forEach(function(s){if(dirty[s.id])map[s.id]=s});
+    Object.keys(dirty).forEach(function(k){if(k.indexOf('del:')===0)delete map[k.slice(4)]});
+    var a=document.activeElement,typing=a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName)&&$('main').contains(a);
+    db=Object.keys(map).map(function(k){return map[k]});persist();
+    renderList();if(!typing)renderMain();
+    status('Đã đồng bộ với Google Sheet ('+db.length+' học sinh)');
+    pushDirty();
+  }).catch(function(){status('Không kết nối được Google Sheet',true)});
+}
+
+/* =============== Danh sách =============== */
+function renderList(){
+  var q=$('search').value.trim().toLowerCase();
+  var arr=db.slice().sort(function(a,b){return(a.name||'').localeCompare(b.name||'','vi')});
+  $('count').textContent=db.length;
+  var html=arr.filter(function(s){var l=latest(s);return !q||[s.name,l.cls,l.school,l.year].join(' ').toLowerCase().indexOf(q)>=0})
+    .map(function(s){var l=latest(s);return'<li data-id="'+esc(s.id)+'" class="'+(s.id===selId?'on':'')+'"><b>'+esc(s.name)+'</b><span>'+esc([l.cls&&('Lớp '+l.cls),l.school,l.year].filter(Boolean).join(' · ')||'Chưa có lịch sử học tập')+'</span></li>'}).join('');
+  $('list').innerHTML=html||'<li class="empty">'+(db.length?'Không tìm thấy':'Chưa có học sinh')+'</li>';
+}
+
+/* =============== Chi tiết =============== */
+function field(k,label,type,opts){
+  var s=cur(),v=s[k]||'';
+  if(type==='select')return'<label class="f">'+label+'<select class="inp" data-f="'+k+'">'+opts.map(function(o){return'<option'+(o===v?' selected':'')+'>'+esc(o)+'</option>'}).join('')+'</select></label>';
+  if(type==='textarea')return'<label class="f" style="grid-column:1/-1">'+label+'<textarea class="inp" data-f="'+k+'">'+esc(v)+'</textarea></label>';
+  return'<label class="f">'+label+'<input class="inp" type="'+(type||'text')+'" data-f="'+k+'" value="'+esc(v)+'"></label>';
+}
+function cell(list,i,k,type,opts){
+  var v=list[i][k]||'';
+  if(type==='select')return'<td><select data-l="'+k+'" data-i="'+i+'">'+opts.map(function(o){return'<option'+(o===v?' selected':'')+'>'+esc(o)+'</option>'}).join('')+'</select></td>';
+  return'<td><input type="'+(type||'text')+'" data-l="'+k+'" data-i="'+i+'" value="'+esc(v)+'"></td>';
+}
+
+function renderMain(){
+  var s=cur(),m=$('main');
+  if(!s){m.innerHTML='<div class="empty"><p>Chọn một học sinh ở danh sách bên trái hoặc bấm <b>+ Thêm học sinh</b>.</p></div>';return}
+  var l=latest(s);
+  var h='<div class="top"><h2>'+esc(s.name)+'</h2>'+
+    '<button class="btn ghost sm" data-act="print">In hồ sơ</button><button class="btn del sm" data-act="delStudent">Xóa học sinh</button>'+
+    '<div class="meta">'+esc([l.cls&&('Lớp '+l.cls),l.school,l.year&&('Năm học '+l.year)].filter(Boolean).join(' · ')||'Chưa có lịch sử học tập')+'</div></div>'+
+    '<div class="tabs">'+[['info','Thông tin'],['hist','Lịch sử học tập'],['tkb','Thời khóa biểu'],['act','Hoạt động']].map(function(t){return'<button data-tab="'+t[0]+'" class="'+(tab===t[0]?'on':'')+'">'+t[1]+'</button>'}).join('')+'</div>';
+  h+='<div id="pane">'+({info:paneInfo,hist:paneHist,tkb:paneTkb,act:paneAct}[tab])(s)+'</div>';
+  m.innerHTML=h;
+}
+function paneInfo(s){
+  return'<div class="grid">'+field('name','Họ và tên')+field('dob','Ngày sinh','date')+field('gender','Giới tính','select',['','Nam','Nữ'])+
+    field('ethnic','Dân tộc')+field('idNo','Mã học sinh / Số định danh')+field('address','Địa chỉ')+
+    field('parent','Phụ huynh')+field('phone','Số điện thoại','tel')+field('email','Email','email')+
+    field('note','Ghi chú (sở thích, sức khỏe, năng khiếu...)','textarea')+'</div>';
+}
+function paneHist(s){
+  if(document.activeElement===document.body||!$('main').contains(document.activeElement))s.history.sort(function(a,b){return String(a.year||'').localeCompare(String(b.year||''))});
+  var hs=s.history,acts=s.activities||[];
+  var years=hs.map(function(x){return x.year}).filter(Boolean),schools={};hs.forEach(function(x){if(x.school)schools[x.school]=1});
+  var gp=hs.map(function(x){return parseFloat(String(x.gpa).replace(',','.'))}).filter(function(v){return!isNaN(v)});
+  var h='<div class="stats"><div class="stat"><b>'+hs.length+'</b><span>Năm học / lớp</span></div>'+
+    '<div class="stat"><b>'+Object.keys(schools).length+'</b><span>Trường đã học</span></div>'+
+    '<div class="stat"><b>'+(gp.length?(gp.reduce(function(a,b){return a+b},0)/gp.length).toFixed(2):'–')+'</b><span>Điểm TB các năm</span></div>'+
+    '<div class="stat"><b>'+acts.length+'</b><span>Hoạt động đã tham gia</span></div></div>';
+  h+='<div class="scroll"><table class="t"><thead><tr><th>Năm học</th><th>Trường</th><th>Cấp</th><th>Lớp</th><th>GVCN</th><th>Điểm TB</th><th>Học lực / KQ</th><th>Hạnh kiểm / RL</th><th>Khen thưởng</th><th>Ghi chú</th><th></th></tr></thead><tbody>';
+  hs.forEach(function(x,i){
+    h+='<tr data-list="history">'+cell(hs,i,'year')+cell(hs,i,'school')+cell(hs,i,'level','select',['','Mầm non','Tiểu học','THCS','THPT','Khác'])+cell(hs,i,'cls')+cell(hs,i,'teacher')+
+      cell(hs,i,'gpa')+cell(hs,i,'rank','select',RANK)+cell(hs,i,'conduct','select',RANK)+cell(hs,i,'award')+cell(hs,i,'note')+
+      '<td class="x"><button data-act="delRow" data-list="history" data-i="'+i+'" title="Xóa dòng">×</button></td></tr>';
+  });
+  if(!hs.length)h+='<tr><td colspan="11" class="empty">Chưa có lịch sử học tập</td></tr>';
+  h+='</tbody></table></div><div class="row" style="margin-top:10px"><button class="btn sm" data-act="addHist">+ Thêm năm học</button></div>'+
+    '<p class="hint">Mỗi dòng là một năm học tại một trường / lớp. Danh sách tự sắp xếp theo năm học khi mở lại tab.</p>';
+  return h;
+}
+function paneTkb(s){
+  var tts=s.timetables;
+  if(!tts.length)return'<div class="empty"><p>Chưa có thời khóa biểu.</p><button class="btn" data-act="addTkb">+ Tạo thời khóa biểu</button></div>';
+  if(!tts.some(function(t){return t.id===tkbSel}))tkbSel=tts[tts.length-1].id;
+  var t=tts.filter(function(x){return x.id===tkbSel})[0];
+  var h='<div class="row"><select class="inp" id="tkbPick">'+tts.map(function(x){return'<option value="'+esc(x.id)+'"'+(x.id===tkbSel?' selected':'')+'>'+esc(x.title||'(chưa đặt tên)')+'</option>'}).join('')+'</select>'+
+    '<button class="btn sm" data-act="addTkb">+ Thời khóa biểu mới</button><button class="btn ghost sm" data-act="copyTkb">Sao chép</button><button class="btn del sm" data-act="delTkb">Xóa</button></div>'+
+    '<div class="row"><input class="inp" data-t="title" value="'+esc(t.title)+'" placeholder="Tên (VD: Lớp 6B – 2025-2026)"><input class="inp" data-t="time" value="'+esc(t.time||'')+'" placeholder="Giờ học (VD: Sáng 7h00 – 11h15, Chiều 13h30 – 17h00)"></div>';
+  h+='<div class="scroll"><table class="tkb"><thead><tr><th style="width:60px">Buổi</th><th style="width:56px">Tiết</th>'+DAYS.map(function(d){return'<th>'+d+'</th>'}).join('')+'</tr></thead><tbody>';
+  [['sang','Sáng'],['chieu','Chiều']].forEach(function(b){
+    for(var p=0;p<PERIODS;p++){
+      h+='<tr>'+(p===0?'<td class="s" rowspan="'+PERIODS+'">'+b[1]+'</td>':'')+'<td class="p">'+(p+1)+'</td>';
+      for(var d=0;d<DAYS.length;d++)h+='<td><input data-g="'+b[0]+'" data-p="'+p+'" data-d="'+d+'" value="'+esc(t.grid[b[0]][p][d])+'"></td>';
+      h+='</tr>';
+    }
+  });
+  h+='</tbody></table></div><label class="f" style="margin-top:12px">Học thêm / ghi chú<textarea class="inp" data-t="extra">'+esc(t.extra||'')+'</textarea></label>';
+  return h;
+}
+function paneAct(s){
+  var as=s.activities,q=actFilter.toLowerCase();
+  var h='<div class="row"><input class="inp" id="actSearch" type="search" placeholder="Lọc theo tên, loại, năm, kết quả..." value="'+esc(actFilter)+'"><button class="btn sm" data-act="addAct">+ Thêm hoạt động</button></div>';
+  h+='<div class="scroll"><table class="t"><thead><tr><th>Ngày</th><th>Năm học</th><th>Tên hoạt động</th><th>Loại</th><th>Cấp</th><th>Vai trò</th><th>Kết quả / Giải</th><th>Ghi chú</th><th></th></tr></thead><tbody>';
+  var n=0;
+  as.forEach(function(x,i){
+    if(q&&[x.date,x.year,x.name,x.type,x.level,x.role,x.result,x.note].join(' ').toLowerCase().indexOf(q)<0)return;n++;
+    h+='<tr data-list="activities">'+cell(as,i,'date','date')+cell(as,i,'year')+cell(as,i,'name')+cell(as,i,'type','select',ACT_TYPES)+cell(as,i,'level','select',LEVELS)+
+      cell(as,i,'role')+cell(as,i,'result')+cell(as,i,'note')+'<td class="x"><button data-act="delRow" data-list="activities" data-i="'+i+'" title="Xóa dòng">×</button></td></tr>';
+  });
+  if(!n)h+='<tr><td colspan="9" class="empty">'+(as.length?'Không có hoạt động phù hợp':'Chưa có hoạt động nào')+'</td></tr>';
+  return h+'</tbody></table></div>';
+}
+
+/* =============== Sự kiện =============== */
+function select(id){selId=id;lsSet(LS_SEL,id);renderList();renderMain()}
+$('list').addEventListener('click',function(e){var li=e.target.closest('li[data-id]');if(li)select(li.dataset.id)});
+$('search').addEventListener('input',renderList);
+$('bAdd').addEventListener('click',function(){
+  var name=prompt('Họ và tên học sinh:');if(!name||!(name=name.trim()))return;
+  var s=newStudent(name);db.push(s);tab='info';select(s.id);touch(s,'Thêm học sinh');
+});
+
+$('main').addEventListener('click',function(e){
+  var t=e.target.closest('[data-tab]');if(t){tab=t.dataset.tab;renderMain();return}
+  var b=e.target.closest('[data-act]');if(!b)return;
+  var s=cur(),a=b.dataset.act;
+  if(a==='print')return window.print();
+  if(a==='delStudent'){
+    if(!confirm('Xóa học sinh "'+s.name+'" và toàn bộ dữ liệu?'))return;
+    db=db.filter(function(x){return x.id!==s.id});delete dirty[s.id];
+    if(sheetUrl){dirty['del:'+s.id]=s.name;pushDelete(s.id,s.name)}
+    persist();select(null);status('Đã xóa '+s.name);return;
+  }
+  if(a==='addHist'){var l=latest(s);s.history.push({id:uid(),year:l.year?nextYear(l.year):schoolYearNow(),school:l.school||'',level:l.level||'',cls:'',teacher:'',gpa:'',rank:'',conduct:'',award:'',note:''});touch(s,'Thêm lịch sử học tập')}
+  else if(a==='addAct'){actFilter='';s.activities.unshift({id:uid(),date:new Date().toISOString().slice(0,10),year:latest(s).year||schoolYearNow(),name:'',type:'',level:'',role:'',result:'',note:''});touch(s,'Thêm hoạt động')}
+  else if(a==='delRow'){var L=s[b.dataset.list];if(!confirm('Xóa dòng này?'))return;L.splice(+b.dataset.i,1);touch(s,'Xóa dòng')}
+  else if(a==='addTkb'){var l2=latest(s),nt={id:uid(),title:(l2.cls?'Lớp '+l2.cls+' – ':'')+(l2.year||schoolYearNow()),time:'',grid:blankGrid(),extra:''};s.timetables.push(nt);tkbSel=nt.id;touch(s,'Tạo thời khóa biểu')}
+  else if(a==='copyTkb'){var src=s.timetables.filter(function(x){return x.id===tkbSel})[0],cp=JSON.parse(JSON.stringify(src));cp.id=uid();cp.title=src.title+' (bản sao)';s.timetables.push(cp);tkbSel=cp.id;touch(s,'Sao chép thời khóa biểu')}
+  else if(a==='delTkb'){if(!confirm('Xóa thời khóa biểu này?'))return;s.timetables=s.timetables.filter(function(x){return x.id!==tkbSel});touch(s,'Xóa thời khóa biểu')}
+  else return;
+  renderList();renderMain();
+});
+function nextYear(y){var m=/^(\d{4})\D+(\d{4})$/.exec(y);return m?(+m[1]+1)+'-'+(+m[2]+1):y}
+
+function onEdit(e){
+  var el=e.target,s=cur();if(!s)return;
+  if(el.id==='actSearch'){actFilter=el.value;var pos=el.selectionStart;$('pane').innerHTML=paneAct(s);var n=$('actSearch');n.focus();n.setSelectionRange(pos,pos);return}
+  if(el.id==='tkbPick'){tkbSel=el.value;renderMain();return}
+  if(el.dataset.f){s[el.dataset.f]=el.value;touch(s,'Sửa thông tin');if(el.dataset.f==='name'){renderList();document.querySelector('.top h2').textContent=el.value}return}
+  if(el.dataset.l){var tr=el.closest('tr');s[tr.dataset.list][+el.dataset.i][el.dataset.l]=el.value;touch(s,tr.dataset.list==='history'?'Sửa lịch sử học tập':'Sửa hoạt động');if(tr.dataset.list==='history')renderList();return}
+  var t=s.timetables.filter(function(x){return x.id===tkbSel})[0];if(!t)return;
+  if(el.dataset.t){t[el.dataset.t]=el.value;touch(s,'Sửa thời khóa biểu');if(el.dataset.t==='title')$('tkbPick').selectedOptions[0].textContent=el.value;return}
+  if(el.dataset.g){t.grid[el.dataset.g][+el.dataset.p][+el.dataset.d]=el.value;touch(s,'Sửa thời khóa biểu')}
+}
+$('main').addEventListener('input',onEdit);
+$('main').addEventListener('change',function(e){if(e.target.tagName==='SELECT')onEdit(e)});
+
+/* ----- Cài đặt / nhập xuất ----- */
+var dlg=$('dlgSettings');
+$('bSettings').addEventListener('click',function(){$('sheetUrl').value=sheetUrl;dlg.showModal()});
+$('bCancel').addEventListener('click',function(){dlg.close()});
+$('bSaveSettings').addEventListener('click',function(){
+  sheetUrl=$('sheetUrl').value.trim();lsSet(LS_URL,sheetUrl);dlg.close();pull();
+});
+$('bPushAll').addEventListener('click',function(){
+  sheetUrl=$('sheetUrl').value.trim();lsSet(LS_URL,sheetUrl);
+  if(!sheetUrl)return alert('Hãy nhập URL trước');
+  status('Đang gửi toàn bộ dữ liệu...');
+  post({action:'saveAll',students:db}).then(function(){dirty={};persist();status('Đã gửi '+db.length+' học sinh lên Google Sheet');dlg.close()})
+    .catch(function(){status('Gửi thất bại',true)});
+});
+$('bReload').addEventListener('click',pull);
+$('bExport').addEventListener('click',function(){
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify({app:'qlhs',version:1,exported:new Date().toISOString(),students:db},null,2)],{type:'application/json'}));
+  a.download='hoc-sinh-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();
+});
+$('bImport').addEventListener('click',function(){$('fImport').click()});
+$('fImport').addEventListener('change',function(e){
+  var f=e.target.files[0];if(!f)return;var r=new FileReader();
+  r.onload=function(){
+    try{var d=JSON.parse(r.result),arr=Array.isArray(d)?d:d.students;if(!Array.isArray(arr))throw 0;
+      if(!confirm('Nhập '+arr.length+' học sinh? Học sinh trùng mã sẽ được ghi đè.'))return;
+      var map={};db.forEach(function(s){map[s.id]=s});
+      arr.forEach(function(s){if(s&&s.id){fix(s);map[s.id]=s;dirty[s.id]='Nhập dữ liệu'}});
+      db=Object.keys(map).map(function(k){return map[k]});persist();renderList();renderMain();
+      if(sheetUrl)pushDirty();else status('Đã nhập '+arr.length+' học sinh');
+    }catch(x){alert('File không hợp lệ')}
+    e.target.value='';
+  };r.readAsText(f);
+});
+function fix(s){['history','timetables','activities'].forEach(function(k){if(!Array.isArray(s[k]))s[k]=[]})}
+
+document.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();if(sheetUrl)pushDirty();status(sheetUrl?'Đang lưu...':'Đã lưu trên máy')}});
+window.addEventListener('online',pushDirty);
+window.addEventListener('beforeunload',function(e){if(sheetUrl&&Object.keys(dirty).length){e.preventDefault();e.returnValue=''}});
+
+/* ----- Khởi động ----- */
+db.forEach(fix);
+renderList();renderMain();pull();
+setInterval(function(){if(!Object.keys(dirty).length&&!document.hidden)pull()},60000);
+})();
+</script>
+</body>
+</html>
