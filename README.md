@@ -6,7 +6,7 @@ Trang web một file (`index.html`) để quản lý hồ sơ học sinh, lưu d
 - **Danh sách học sinh**: thêm, xóa, tìm kiếm theo tên / lớp / trường.
 - **Thông tin**: họ tên, ngày sinh, giới tính, dân tộc, mã học sinh, địa chỉ, phụ huynh, điện thoại, email, ghi chú.
 - **Lịch sử học tập**: mỗi dòng là một năm học ở một trường, một lớp (GVCN, điểm TB, học lực, hạnh kiểm, khen thưởng); có thống kê nhanh.
-- **Thời khóa biểu riêng**: mỗi học sinh có nhiều thời khóa biểu (theo lớp/năm), sáng – chiều, thứ 2 – thứ 7, sao chép được.
+- **Thời khóa biểu theo thời điểm**: trình bày theo mẫu TKB lớp 6B (buổi sáng/chiều, tiết + giờ, gộp tiết, học thêm viền vàng, ngày nghỉ). Bấm vào ô để sửa; "Lưu thành thời điểm mới" giữ lại bản cũ và tạo bản áp dụng từ ngày mới; tự đánh dấu bản **đang áp dụng**; in khổ A4 ngang.
 - **Hoạt động đã tham gia**: ngày, năm học, loại, cấp, vai trò, kết quả/giải; lọc nhanh.
 - **Lưu trữ**: tự lưu trong trình duyệt và đồng bộ lên Google Sheet; xuất / nhập file JSON để sao lưu; in hồ sơ.
 
