@@ -68,6 +68,8 @@ function findRow_(sh, id) {
 }
 
 function current_(s) {
+  var c = (s.history || []).filter(function (h) { return h.current; })[0];
+  if (c) return c;
   var h = (s.history || []).slice().sort(function (a, b) { return String(b.year || '').localeCompare(String(a.year || '')); })[0] || {};
   return h;
 }
