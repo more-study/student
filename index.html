@@ -63,8 +63,7 @@ table.t td.x button{border:0;background:none;color:var(--red);font-size:18px;cur
 table.t tr.curh td{background:var(--hi)}
 table.t td input[type=radio]{width:auto;min-width:0}
 table.gb th.c{text-align:center}table.gb td input{min-width:44px;text-align:center}
-table.gb td.avg{text-align:center;font-weight:700;color:var(--navy);background:var(--soft);min-width:48px}
-table.gb td.avg.y{background:#fef3c7}
+table.gb td.tbc{background:#fef3c7}table.gb td.tbc input{font-weight:700;color:var(--navy)}
 table.sum td{padding:7px 8px}
 /* ----- thời khóa biểu (theo mẫu) ----- */
 .sheet{background:#fff;border:1px solid var(--line);border-radius:12px;padding:18px 20px 14px;min-width:900px}
@@ -217,48 +216,29 @@ function ctxBar(s){
 }
 /* ----- Điểm ----- */
 var SUBJECTS=['Toán','Ngữ văn','Tiếng Anh','KHTN','LS&ĐL','GDCD','Tin học','Công nghệ','GDTC','Nghệ thuật','HĐTN, HN','GDĐP'];
-function blankHK(){return{tx:['','','',''],gk:'',ck:''}}
+function blankHK(){return{gk:'',ck:'',tb:''}}
 function grades(h){if(!h.grades)h.grades={subjects:SUBJECTS.map(function(n){return{name:n,hk1:blankHK(),hk2:blankHK()}})};return h.grades}
 function gnum(v){v=String(v==null?'':v).trim().replace(',','.');if(v==='')return null;var x=parseFloat(v);return isNaN(x)||x<0||x>10||!/^\d+(\.\d+)?$/.test(v)?null:x}
-function r1(v){return Math.round(v*10+1e-9)/10}
-function hkAvg(k){var tx=k.tx.map(gnum).filter(function(v){return v!==null}),gk=gnum(k.gk),ck=gnum(k.ck);
-  if(!tx.length||gk===null||ck===null)return null;return r1((tx.reduce(function(a,b){return a+b},0)+2*gk+3*ck)/(tx.length+5))}
-function calcGrades(h){
-  var g=h.grades||{subjects:[]},out={rows:[],t1:null,t2:null,y:null},a1=[],a2=[],ay=[];
-  g.subjects.forEach(function(sub){var t1=hkAvg(sub.hk1),t2=hkAvg(sub.hk2),y=t1!==null&&t2!==null?r1((t1+2*t2)/3):null;
-    out.rows.push({t1:t1,t2:t2,y:y});if(t1!==null)a1.push(t1);if(t2!==null)a2.push(t2);if(y!==null)ay.push(y)});
-  var m=function(a){return a.length?r1(a.reduce(function(x,y){return x+y},0)/a.length):null};
-  out.t1=m(a1);out.t2=m(a2);out.y=m(ay);return out;
-}
-function fmt(v){return v===null||v===undefined?'–':v.toFixed(1)}
-function gpaOf(h){var v=gnum(h.gpa);if(v!==null)return v;return calcGrades(h).y}
 function paneDiem(s){
   var h=ctxEntry(s);
   if(!h){
     var es=ctxEntries(s);
     if(!es.length)return'<div class="empty">Chưa có lịch sử học tập. Hãy thêm năm học ở tab <b>Lịch sử học tập</b>.</div>';
-    return'<div class="scroll"><table class="t sum"><thead><tr><th>Năm học</th><th>Trường</th><th>Lớp</th><th>TB HK I</th><th>TB HK II</th><th>Cả năm</th><th>Học lực / KQ</th><th>Hạnh kiểm / RL</th><th></th></tr></thead><tbody>'+
-      es.map(function(x){var c=calcGrades(x),y=gnum(x.gpa)!==null?gnum(x.gpa):c.y;return'<tr><td>'+esc(x.year)+(x.current?' ★':'')+'</td><td>'+esc(x.school)+'</td><td>'+esc(x.cls)+'</td><td>'+fmt(c.t1)+'</td><td>'+fmt(c.t2)+'</td><td><b>'+fmt(y)+'</b></td><td>'+esc(x.rank)+'</td><td>'+esc(x.conduct)+'</td>'+
+    return'<div class="scroll"><table class="t sum"><thead><tr><th>Năm học</th><th>Trường</th><th>Lớp</th><th>Điểm TB</th><th>Học lực / KQ</th><th>Hạnh kiểm / RL</th><th></th></tr></thead><tbody>'+
+      es.map(function(x){return'<tr><td>'+esc(x.year)+(x.current?' ★':'')+'</td><td>'+esc(x.school)+'</td><td>'+esc(x.cls)+'</td><td><b>'+esc(x.gpa||'–')+'</b></td><td>'+esc(x.rank)+'</td><td>'+esc(x.conduct)+'</td>'+
         '<td><button class="btn ghost sm" data-ctx="h:'+esc(x.id)+'">Xem bảng điểm</button></td></tr>'}).join('')+'</tbody></table></div>'+
-      '<p class="hint">Chọn một năm học ở ô "Đang xem" hoặc bấm "Xem bảng điểm" để nhập điểm chi tiết.</p>';
+      '<p class="hint">Chọn một năm học ở ô "Đang xem" hoặc bấm "Xem bảng điểm" để nhập điểm.</p>';
   }
-  var g=grades(h),c=calcGrades(h);
-  var th='<th>TX1</th><th>TX2</th><th>TX3</th><th>TX4</th><th>GK</th><th>CK</th><th>TB</th>';
-  var out='<div class="stats"><div class="stat"><b id="gT1">'+fmt(c.t1)+'</b><span>TB học kỳ I</span></div><div class="stat"><b id="gT2">'+fmt(c.t2)+'</b><span>TB học kỳ II</span></div>'+
-    '<div class="stat"><b id="gY">'+fmt(c.y)+'</b><span>TB cả năm '+esc(h.year||'')+'</span></div><div class="stat"><b>'+esc(h.rank||'–')+'</b><span>Học lực / Kết quả</span></div></div>'+
-    '<div class="scroll"><table class="t gb"><thead><tr><th rowspan="2">Môn học</th><th colspan="7" class="c">Học kỳ I</th><th colspan="7" class="c">Học kỳ II</th><th rowspan="2">Cả năm</th><th rowspan="2"></th></tr><tr>'+th+th+'</tr></thead><tbody>';
+  var g=grades(h),th='<th>Giữa kỳ</th><th>Cuối kỳ</th><th>TB môn</th>';
+  var out='<div class="scroll"><table class="t gb"><thead><tr><th rowspan="2">Môn học</th><th colspan="3" class="c">Học kỳ I</th><th colspan="3" class="c">Học kỳ II</th><th rowspan="2"></th></tr><tr>'+th+th+'</tr></thead><tbody>';
   g.subjects.forEach(function(sub,i){
-    var inp=function(hk,k,v){return'<td><input data-gs="'+i+'" data-gh="'+hk+'" data-gk="'+k+'" value="'+esc(v)+'" inputmode="decimal"></td>'};
-    out+='<tr><td><input data-gs="'+i+'" data-gk="name" value="'+esc(sub.name)+'" style="min-width:110px;font-weight:600"></td>';
-    ['hk1','hk2'].forEach(function(hk){var k=sub[hk];k.tx.forEach(function(v,j){out+=inp(hk,'tx'+j,v)});out+=inp(hk,'gk',k.gk)+inp(hk,'ck',k.ck)+'<td class="avg" id="g'+hk+'-'+i+'">'+fmt(c.rows[i][hk==='hk1'?'t1':'t2'])+'</td>'});
-    out+='<td class="avg y" id="gy-'+i+'">'+fmt(c.rows[i].y)+'</td><td class="x"><button data-act="delSub" data-i="'+i+'" title="Xóa môn">×</button></td></tr>';
+    var inp=function(hk,k){return'<td'+(k==='tb'?' class="tbc"':'')+'><input data-gs="'+i+'" data-gh="'+hk+'" data-gk="'+k+'" value="'+esc((sub[hk]||{})[k]||'')+'" inputmode="decimal"></td>'};
+    out+='<tr><td><input data-gs="'+i+'" data-gk="name" value="'+esc(sub.name)+'" style="min-width:120px;font-weight:600"></td>'+
+      ['hk1','hk2'].map(function(hk){return inp(hk,'gk')+inp(hk,'ck')+inp(hk,'tb')}).join('')+
+      '<td class="x"><button data-act="delSub" data-i="'+i+'" title="Xóa môn">×</button></td></tr>';
   });
   return out+'</tbody></table></div><div class="row" style="margin-top:10px"><button class="btn sm" data-act="addSub">+ Thêm môn</button></div>'+
-    '<p class="hint">TB môn mỗi kỳ = (tổng TX + 2×GK + 3×CK) ÷ (số bài TX + 5). Cả năm = (HK I + 2×HK II) ÷ 3. Môn đánh giá bằng nhận xét (Đ / CĐ) có thể nhập chữ, không tính vào trung bình.</p>';
-}
-function refreshGrades(h,i){
-  var c=calcGrades(h),set=function(id,v){var e=$(id);if(e)e.textContent=fmt(v)};
-  set('ghk1-'+i,c.rows[i].t1);set('ghk2-'+i,c.rows[i].t2);set('gy-'+i,c.rows[i].y);set('gT1',c.t1);set('gT2',c.t2);set('gY',c.y);
+    '<p class="hint">Tự nhập điểm Giữa kỳ, Cuối kỳ và Trung bình môn cho từng học kỳ. Môn đánh giá bằng nhận xét có thể nhập Đ / CĐ.</p>';
 }
 function schoolYearNow(){var d=new Date(),y=d.getFullYear();return d.getMonth()>=7?y+'-'+(y+1):(y-1)+'-'+y}
 
@@ -351,7 +331,7 @@ function paneHist(s){
   s.history.sort(function(a,b){return String(a.year||'').localeCompare(String(b.year||''))});
   var hs=s.history,acts=s.activities||[];
   var years=hs.map(function(x){return x.year}).filter(Boolean),schools={};hs.forEach(function(x){if(x.school)schools[x.school]=1});
-  var gp=hs.map(gpaOf).filter(function(v){return v!==null});
+  var gp=hs.map(function(x){return gnum(x.gpa)}).filter(function(v){return v!==null});
   var h='<div class="stats"><div class="stat"><b>'+hs.length+'</b><span>Năm học / lớp</span></div>'+
     '<div class="stat"><b>'+Object.keys(schools).length+'</b><span>Trường đã học</span></div>'+
     '<div class="stat"><b>'+(gp.length?(gp.reduce(function(a,b){return a+b},0)/gp.length).toFixed(2):'–')+'</b><span>Điểm TB các năm</span></div>'+
@@ -359,13 +339,13 @@ function paneHist(s){
   h+='<div class="scroll"><table class="t"><thead><tr><th title="Năm đang học">Đang học</th><th>Năm học</th><th>Trường</th><th>Cấp</th><th>Lớp</th><th>GVCN</th><th>Điểm TB</th><th>Học lực / KQ</th><th>Hạnh kiểm / RL</th><th>Khen thưởng</th><th>Ghi chú</th><th></th><th></th></tr></thead><tbody>';
   hs.forEach(function(x,i){
     h+='<tr data-list="history" class="'+(x.current?'curh':'')+'"><td class="x"><input type="radio" name="curH" data-cur="'+i+'"'+(x.current?' checked':'')+' title="Đánh dấu đang học"></td>'+cell(hs,i,'year')+cell(hs,i,'school')+cell(hs,i,'level','select',['','Mầm non','Tiểu học','THCS','THPT','Khác'])+cell(hs,i,'cls')+cell(hs,i,'teacher')+
-      cell(hs,i,'gpa').replace('<input','<input placeholder="'+fmt(calcGrades(x).y)+'"')+cell(hs,i,'rank','select',RANK)+cell(hs,i,'conduct','select',RANK)+cell(hs,i,'award')+cell(hs,i,'note')+
+      cell(hs,i,'gpa')+cell(hs,i,'rank','select',RANK)+cell(hs,i,'conduct','select',RANK)+cell(hs,i,'award')+cell(hs,i,'note')+
       '<td><button class="btn ghost sm" data-ctx="h:'+esc(x.id)+'" data-go="diem" title="Xem điểm, thời khóa biểu, hoạt động của năm này">Xem</button></td>'+
       '<td class="x"><button data-act="delRow" data-list="history" data-i="'+i+'" title="Xóa dòng">×</button></td></tr>';
   });
   if(!hs.length)h+='<tr><td colspan="13" class="empty">Chưa có lịch sử học tập</td></tr>';
   h+='</tbody></table></div><div class="row" style="margin-top:10px"><button class="btn sm" data-act="addHist">+ Thêm năm học</button></div>'+
-    '<p class="hint">Mỗi dòng là một năm học tại một trường / lớp. Chọn ô <b>Đang học</b> cho năm hiện tại; bấm <b>Xem</b> để theo dõi lại điểm, thời khóa biểu, hoạt động của năm đó. Ô Điểm TB để trống sẽ lấy điểm tính từ tab Điểm (hiện mờ).</p>';
+    '<p class="hint">Mỗi dòng là một năm học tại một trường / lớp. Chọn ô <b>Đang học</b> cho năm hiện tại; bấm <b>Xem</b> để theo dõi lại điểm, thời khóa biểu, hoạt động của năm đó.</p>';
   return h;
 }
 function paneTkb(s){
@@ -423,7 +403,7 @@ function sheetHtml(t){
   return h+'</table><div class="ft"><div>'+esc(t.noteL||'')+'</div><div>'+esc(t.noteR||'')+'</div></div>';
 }
 function blankTkb(s){
-  var l=(s.history&&ctxEntry(s))||latest(s),R=[];
+  var l=(s.id&&ctxEntry(s))||latest(s),R=[];
   [['sang',['7:15 – 8:00','8:15 – 9:00','9:10 – 9:55','10:05 – 10:50','11:00 – 11:40']],['chieu',['14:00 – 14:45','14:55 – 15:40','15:50 – 16:35']]].forEach(function(g){
     g[1].forEach(function(tm,i){R.push({s:g[0],label:'Tiết '+(i+1),time:tm})})});
   return{id:uid(),title:'THỜI KHÓA BIỂU'+(l.cls?' LỚP '+l.cls:''),year:l.year||schoolYearNow(),from:new Date().toISOString().slice(0,10),sub:'',info:'',noteL:'Ô viền nét đứt màu vàng là lịch học thêm.',noteR:'',
@@ -565,8 +545,8 @@ function onEdit(e){
   if(el.id==='ctxPick'){ctx=el.value;tkbSel=null;renderMain();return}
   if(el.dataset.cur!==undefined){s.history.forEach(function(h,j){h.current=j===+el.dataset.cur});ctx=null;touch(s,'Đổi năm đang học');renderList();renderMain();return}
   if(el.dataset.gs!==undefined){var he=ctxEntry(s),sb=grades(he).subjects[+el.dataset.gs];
-    if(el.dataset.gk==='name')sb.name=el.value;else{var k=sb[el.dataset.gh];if(el.dataset.gk.indexOf('tx')===0)k.tx[+el.dataset.gk.slice(2)]=el.value;else k[el.dataset.gk]=el.value}
-    refreshGrades(he,+el.dataset.gs);touch(s,'Sửa điểm');return}
+    if(el.dataset.gk==='name')sb.name=el.value;else{if(!sb[el.dataset.gh])sb[el.dataset.gh]=blankHK();sb[el.dataset.gh][el.dataset.gk]=el.value}
+    touch(s,'Sửa điểm');return}
   if(el.id==='tkbEdit'){tkbEdit=el.checked;renderMain();return}
   if(el.dataset.f){s[el.dataset.f]=el.value;touch(s,'Sửa thông tin');if(el.dataset.f==='name'){renderList();document.querySelector('.top h2').textContent=el.value}return}
   if(el.dataset.l){var tr=el.closest('tr');s[tr.dataset.list][+el.dataset.i][el.dataset.l]=el.value;touch(s,tr.dataset.list==='history'?'Sửa lịch sử học tập':'Sửa hoạt động');if(tr.dataset.list==='history')renderList();return}
