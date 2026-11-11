@@ -216,6 +216,7 @@ function pull(){
     db=Object.keys(map).map(function(k){return map[k]});persist();
     renderList();if(!typing)renderMain();
     status('Đã đồng bộ với Google Sheet ('+db.length+' học sinh)');
+    seedIfEmpty();
     pushDirty();
   }).catch(function(){status('Không kết nối được Google Sheet',true)});
 }
@@ -520,9 +521,20 @@ document.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&e.key
 window.addEventListener('online',pushDirty);
 window.addEventListener('beforeunload',function(e){if(sheetUrl&&Object.keys(dirty).length){e.preventDefault();e.returnValue=''}});
 
+/* ----- Dữ liệu ban đầu: học sinh Nguyễn Doãn Việt Anh, TKB lớp 6B (áp dụng từ 19/10/2026) ----- */
+var LS_SEEDED='qlhs-seeded';
+function seedIfEmpty(){
+  if(db.length||lsGet(LS_SEEDED,false))return;
+  var s=newStudent('Nguyễn Doãn Việt Anh');s.id='hs-nguyen-doan-viet-anh';s.gender='Nam';
+  s.history.push({id:uid(),year:'2026-2027',school:'THCS Tiên Du',level:'THCS',cls:'6B',teacher:'Cô Lý',gpa:'',rank:'',conduct:'',award:'',note:''});
+  var t=tpl6B();t.id='tkb-6b-20261019';s.timetables.push(t);
+  db.push(s);lsSet(LS_SEEDED,true);selId=s.id;lsSet(LS_SEL,selId);tab='tkb';tkbSel=t.id;
+  touch(s,'Tạo dữ liệu ban đầu');renderList();renderMain();
+}
 /* ----- Khởi động ----- */
 db.forEach(fix);
-renderList();renderMain();pull();
+renderList();renderMain();
+if(sheetUrl)pull();else seedIfEmpty();
 setInterval(function(){if(!Object.keys(dirty).length&&!document.hidden)pull()},60000);
 })();
 </script>
