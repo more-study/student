@@ -524,8 +524,17 @@ window.addEventListener('beforeunload',function(e){if(sheetUrl&&Object.keys(dirt
 /* ----- Dữ liệu ban đầu: học sinh Nguyễn Doãn Việt Anh, TKB lớp 6B (áp dụng từ 19/10/2026) ----- */
 var LS_SEEDED='qlhs-seeded';
 function seedIfEmpty(){
-  if(db.length||lsGet(LS_SEEDED,false))return;
-  var s=newStudent('Nguyễn Doãn Việt Anh');s.id='hs-nguyen-doan-viet-anh';s.gender='Nam';
+  if(db.length){ // học sinh Việt Anh đã có sẵn (VD từ Google Sheet) nhưng chưa có TKB lớp 6B -> thêm 1 lần
+    db.forEach(function(x){
+      if(x.seeded6B||String(x.name||'').trim().toLowerCase().normalize('NFC')!=='nguyễn doãn việt anh'.normalize('NFC'))return;
+      fix(x);var t6=tpl6B();t6.id='tkb-6b-20261019';
+      if(!x.timetables.some(function(t){return t.id===t6.id}))x.timetables.push(t6);
+      x.seeded6B=true;if(x.id===selId)tkbSel=t6.id;touch(x,'Thêm thời khóa biểu lớp 6B (19/10/2026)');
+    });
+    renderList();renderMain();return;
+  }
+  if(lsGet(LS_SEEDED,false))return;
+  var s=newStudent('Nguyễn Doãn Việt Anh');s.id='hs-nguyen-doan-viet-anh';s.gender='Nam';s.seeded6B=true;
   s.history.push({id:uid(),year:'2026-2027',school:'THCS Tiên Du',level:'THCS',cls:'6B',teacher:'Cô Lý',gpa:'',rank:'',conduct:'',award:'',note:''});
   var t=tpl6B();t.id='tkb-6b-20261019';s.timetables.push(t);
   db.push(s);lsSet(LS_SEEDED,true);selId=s.id;lsSet(LS_SEL,selId);tab='tkb';tkbSel=t.id;
